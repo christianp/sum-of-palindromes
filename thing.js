@@ -63,7 +63,7 @@ function is_palindrome(digits) {
 }
 
 function digits_to_int(digits,base=10) {
-    return digits.map(x=>x+'').join('');
+    return parseInt(digits.map(x=>x+'').join(''),base);
 }
 function f(digitses,base=10) {
     return digitses;
@@ -132,6 +132,17 @@ function sum_four_digits(n,digits,base) {
             const ps = sum_of_palindromes(m,base)
             return f([[d3,0,0,d3]]).concat(ps);
         }
+    } else if(d0<=d3-1 && d3!=1) {
+        return [
+            [d3-1,base-1,base-1,d3-1],
+            [base+d0-d3],
+            [1]
+        ];
+    } else {
+        return [
+            [base-1,base-1,base-1],
+            [1]
+        ];
     }
 }
 
@@ -143,26 +154,23 @@ function sum_five_digits(n,digits,base) {
     const r = digits_to_int([1,d3,0,d3,1],base);
     const m = n - r;
     const d = D(m,base);
-    if(n >= r) {
-        if(m!=digits_to_int([2,0,1],base) && (d==0 || m!=(d+1)*base+d)) {
+    if(n >= r && m!=digits_to_int([2,0,1],base) && (d==0 || m!=(d+1)*base+d)) {
             const ps = sum_of_palindromes(m,base);
-            return [r].concat(ps);
-        } else if(m==digits_to_int([2,0,1],base)) {
-            return f([[1,d3,1,d3,1],[1,0,1]]);
-        } else if(m==(d+1)*base+d) {
-            if(d>=1 && d<=base-2 && d3!=0) {
-                if(d+1+d3<=base-1) {
-                    return f([[1,d3-1,1,d3-1,1],[base-1,d+1,base-1],[d+1]]);
-                } else {
-                    return f([[1,d3-1,1,d3-1,1],[base-1,d+1,base-1],[d+1]]);
-                }
-            } else if(d>=1 && d<=base-2 && d3==0) {
-                return f([[base-1,base-1,base-1,base-1],[d+1,d+1],[1]]);
-            }
+            return [[1,d3,0,d3,1]].concat(ps);
+    } else if(n>=r && m==digits_to_int([2,0,1],base)) {
+        return f([[1,d3,1,d3,1],[1,0,1]]);
+    } else if(n>=r && m==(d+1)*base+d && d>=1 && d<=base-2 && d3!=0) {
+        if(d+1+d3<=base-1) {
+            return f([[1,d3-1,1,d3-1,1],[base-1,d+1,base-1],[d+1]]);
+        } else if(d3+1+d==base+d1) {
+            return f([[1,d3-1,1,d3-1,1],[base-1,d+1,base-1],[d+1]]);
         }
-    }else if(d3==0) {
+    } else if(n>=r && m==(d+1)*base+d && d>=1 && d<=base-2 && d3==0) {
+        return f([[base-1,base-1,base-1,base-1],[d+1,d+1],[1]]);
+    } else if(n<r && d3==0) {
         return f([[base-1,base-1,base-1,base-1],[1]]);
-    } else if(d<=base-2) {
+        // here 10110;
+    } else if(n<r && d3!=0 && d2==base-1 d<=base-2) {
         const [p1,p2] = sum_of_palindromes(m2,base);
         return f([[1,d3-1,base-1,d3-1,1]]).concat(p1,p2);
     } else {
@@ -1184,6 +1192,30 @@ function sum_of_palindromes(n,base=10) {
         default:
             return decide_type(digits,base);
     }
+}
+
+function test(n,base=10) {
+    try {
+        const palindromes = sum_of_palindromes(n,base);
+        if(!palindromes.every(is_palindrome)) {
+            console.log(palindromes);
+            throw(new Error("Not every number is a palindrome"));
+        }
+        const digits = digits_of(n,base).reverse();
+        const t = big_sum(palindromes);
+        for(let i=0;i<digits.length;i++) {
+            if(digits[i]!=t[i]) {
+                console.log('total',t);
+                throw(new Error("Doesn't sum to the same thing"));
+            }
+        }
+    } catch(e) {
+        console.error('n:',n);
+        console.error(e);
+        console.log(e.stack);
+        throw(e);
+    }
+    return true;
 }
 
 
