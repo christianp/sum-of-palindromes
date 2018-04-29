@@ -154,7 +154,10 @@ function sum_five_digits(n,digits,base) {
     const r = digits_to_int([1,d3,0,d3,1],base);
     const m = n - r;
     const d = D(m,base);
-    if(n >= r && m!=digits_to_int([2,0,1],base) && (d==0 || m!=(d+1)*base+d)) {
+    const r2 = digits_to_int([1,d3-1,base-1,d3-1,1],base);
+    const m2 = n-r2;
+    const dd = D(m2,base);
+    if(n >= r && m!=digits_to_int([2,0,1],base) && (d==0 || d==base-1 || m!=(d+1)*base+d)) {
             const ps = sum_of_palindromes(m,base);
             return [[1,d3,0,d3,1]].concat(ps);
     } else if(n>=r && m==digits_to_int([2,0,1],base)) {
@@ -169,12 +172,15 @@ function sum_five_digits(n,digits,base) {
         return f([[base-1,base-1,base-1,base-1],[d+1,d+1],[1]]);
     } else if(n<r && d3==0) {
         return f([[base-1,base-1,base-1,base-1],[1]]);
-        // here 10110;
-    } else if(n<r && d3!=0 && d2==base-1 d<=base-2) {
-        const [p1,p2] = sum_of_palindromes(m2,base);
-        return f([[1,d3-1,base-1,d3-1,1]]).concat(p1,p2);
+    } else if(n<r && d3!=0 && m2!=digits_to_int([2,0,1],base) && (d==0 || d==base-1 || m2!=(dd+1)*base+dd)) {
+        const ps = sum_of_palindromes(m2,base);
+        return [[1,d3-1,base-1,d3-1,1]].concat(ps);
     } else {
-        return f([[1,d3-1,base-2,d3-1,1],[1,d+1,1],[d-1]]);
+        return [
+            [1,d3-1,base-2,d3-1,1],
+            [1,d+1,1],
+            [d-1]
+        ];
     }
 }
 
