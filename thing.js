@@ -22,8 +22,6 @@ function big_sum(ns,base=10) {
 
 function big_sub(a,b,base) {
     a = a.slice();
-    console.log(a.join(''));
-    console.log(b.join(''));
     for(let i=0;i<a.length;i++) {
         a[i] -= (b[i] || 0);
         while(a[i]<0) {
@@ -31,7 +29,6 @@ function big_sub(a,b,base) {
             a[i+1] -= 1;
         }
     }
-    console.log(a.join(''));
     return a;
 }
 
@@ -288,13 +285,13 @@ function sum_six_digits(n,digits,base=10) {
             ];
         } else if(D(d0-d4+2,base)==0 && d2!=0) {
             x[1] = Math.floor((base+d4-1)/2);
-            y[2] = base+d2-1-x[1];
+            y[1] = base+d4-1-x[1];
             z[1] = base-1;
-            c[1] = idiv(z[1]+y[1]+z[1]-d0,base);
+            c[1] = idiv(x[1]+y[1]+z[1]-d0,base);
             x[2] = Math.floor((base+d3-1)/2);
             y[2] = base+d3-1 - x[2];
             z[2] = D(d1-x[2]-y[2]-c[1],base);
-            c[2] = idiv(z[2]+y[2]+z[2]+c[1]-digits[1],base);
+            c[2] = idiv(x[2]+y[2]+z[2]+c[1]-digits[1],base);
             x[3] = Math.floor((1+d2-c[2])/2);
             y[3] = 1+d2-c[2]-x[3];
             return [
@@ -302,14 +299,14 @@ function sum_six_digits(n,digits,base=10) {
                 [y[1],y[2],y[3],y[2],y[1]],
                 [z[1],z[2],z[1]]
             ];
-        } else if(D(d0-d4+2)==0 && d2==0) {
+        } else if(D(d0-d4+2,base)==0 && d2==0) {
             if(d4==0) {
                 x[2] = Math.floor(d3/2);
                 y[2] = d3-x[2];
                 z[2] = D(d1-x[2]-y[2]-1,base);
                 c[2] = idiv(x[2]+y[2]+z[2]+1-d1,base);
                 x[3] = Math.floor((base-c[2]-z[2])/2);
-                y[3] = g-c[2]-z[2]-x[3];
+                y[3] = base-c[2]-z[2]-x[3];
                 return [
                     [base-2,x[2],x[3],x[2],base-2],
                     [1,y[2],y[3],y[2],1],
@@ -321,7 +318,7 @@ function sum_six_digits(n,digits,base=10) {
                 z[2] = D(d1-x[2]-y[2]-1,base);
                 c[2] = idiv(x[2]+y[2]+z[2]+1-d1,base);
                 x[3] = Math.floor((base-c[2]-z[2])/2);
-                y[3] = g-c[2]-z[2]-x[3];
+                y[3] = base-c[2]-z[2]-x[3];
                 return [
                     [base-1,x[2],x[3],x[2],base-1],
                     [1,y[2],y[3],y[2],1],
@@ -331,7 +328,7 @@ function sum_six_digits(n,digits,base=10) {
                 x[2] = Math.floor(d3/2);
                 y[2] = d3-x[2];
                 z[2] = D(d1-x[2]-y[2]-2,base);
-                c[2] = idiv(x[2]+y[2]+z[2]+1-d1,base);
+                c[2] = idiv(x[2]+y[2]+z[2]+2-d1,base);
                 if(c[2]!=2) {
                     x[3] = Math.floor((base-c[2]-z[2])/2);
                     y[3] = base-c[2]-z[2]-x[3];
@@ -378,7 +375,7 @@ function sum_six_digits(n,digits,base=10) {
             } else {
                 const y = D(d1-3-1,base)==base-1 ? 3 : D(d1-3-1,base)==base-2 ? 2 : 1;
                 const x = d3<y ? d3+base-y : d3-y;
-                c[1] = idiv(3+y+D(d1-3-y)-d1,base);
+                c[1] = idiv(3+y+D(d1-3-y,base)-d1,base);
                 let mu = 0;
                 c[2] = idiv(x+D(d2-x-1-c[1]+mu,base)+c[1]+1-d2,base);
                 if(c[2]<=1) {
@@ -502,7 +499,7 @@ function sum_six_digits(n,digits,base=10) {
                 c[1] = idiv(2+y+D(d1-1-y,base),base);
                 c[2] = idiv(base-y-1+D(d2+y+2,base)+base-1-d2,base);
                 return [
-                    [1,0,g-y-1-c[1],g-y-1-c[1],0,1],
+                    [1,0,base-y-1-c[1],base-y-1-c[1],0,1],
                     [2,y-c[2]+1+c[1],D(d2+y+2,base),y-c[2]+1+c[1],2],
                     [base-1,D(d1-1-y,base)+c[2]-1-c[1],base-1]
                 ];
@@ -520,10 +517,9 @@ function sum_six_digits(n,digits,base=10) {
     }
 }
 
-function algorithm_1(digits,config,base) {
+function algorithm_1(m,digits,config,base) {
     console.log('algo 1');
     const l = digits.length;
-    const m = l >> 1;
     const [x,y,z] = [[],[],[]];
     [x[1],y[1],z[1]] = [config[0][0],config[1][0],config[2][0]];
     const c = [];
@@ -551,10 +547,16 @@ function algorithm_1(digits,config,base) {
     } else if(c[m]==0) {
         config[0][m] = 1;
     } else if(c[m]==2) {
-        config[0][m] = 1;
-        config[1][m] -= 1;
-        config[1][m-1] -= 1;
-        config[2][m-1] = 0;
+        if(z[m]!=base-1) {
+            config[1][m] -= 1;
+            config[1][m-1] -= 1;
+            config[2][m-1] += 1;
+        } else {
+            config[0][m] = 1;
+            config[1][m] -= 1;
+            config[1][m-1] -= 1;
+            config[2][m-1] = 0;
+        }
     }
     return config;
 }
@@ -633,7 +635,7 @@ function algorithm_3(digits,config,base) {
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
-    [x[1],y[1],z[1]] = [config[0][0],config[1][0],config[2][0]];
+    [x[1],y[1],z[1]] = [config[0][1],config[1][0],config[2][0]];
     const c = [];
     c[1] = idiv(1+y[1]+z[1], base);
     x[2] = z[1]<=digits[2*m-3]-1 ? D(digits[2*m-2]-y[1],base) : D(digits[2*m-2]-y[1]-1,base);
@@ -688,7 +690,6 @@ function algorithm_3(digits,config,base) {
     }
     config[0][m] = x[m];
     config[1][m-1] = y[m];
-    console.log(JSON.stringify(config));
     return config;
 }
 
@@ -714,48 +715,48 @@ function algorithm_4(digits,config,base) {
     y[m-1] = D(digits[m-1]-z[m-2]-1,base);
     z[m-1] = D(digits[m-2]-x[m-2]-y[m-1]-c[m-2],base);
     c[m-1] = idiv(x[m-2]+y[m-1]+z[m-1]+c[m-2]-digits[m-2],base);
-    if(x[m-1]+c[m-1] == 1) {
+    if(x[m-1]+c[m-1] == 1) { // IV.1
         // do nothing
-    } else if(x[m-1]+c[m-1]==0 && y[m-1]!=base-1) {
-        if(z[m-1]!=0) {
+    } else if(x[m-1]+c[m-1]==0 && y[m-1]!=base-1) { // IV.2
+        if(z[m-1]!=0) { // IV.2.i
             y[m-1] += 1;
             z[m-1] -= 1;
-        } else if(z[m-1]==0 && y[m-1]!=0) {
-            if(y[m-1]!=1 && z[m-2] != base-1) {
+        } else if(z[m-1]==0 && y[m-1]!=0) { // IV.2.ii
+            if(y[m-1]!=1 && z[m-2] != base-1) { // IV.2.ii.a
                 x[m-1] = 1;
                 y[m-2] -= 1;
                 y[m-1] -= 1;
                 z[m-2] += 1;
                 z[m-1] += 1;
-            } else if(y[m-1] != 1 && z[m-2] == base-1) {
+            } else if(y[m-1] != 1 && z[m-2] == base-1) {    // IV.2.ii.b
                 x[m-1] = 2;
                 y[m-2] -= 1;
                 y[m-1] -= 2;
                 z[m-2] = 0;
                 z[m-1] = 3;
-            } else if(y[m-1]==1) {
+            } else if(y[m-1]==1) {  // IV.2.ii.c
                 x[m-1] = 1;
                 y[m-2] -= 1;
                 y[m-1] = base-1;
                 z[m-2] = 0;
                 z[m-1] = 3;
             }
-        } else if(z[m-1]==0 && y[m-2]==0) {
-            if(z[m-2] != base-1) {
+        } else if(z[m-1]==0 && y[m-2]==0) { // IV.2.iii
+            if(z[m-2] != base-1) {  // IV.2.iii.a
                 x[m-2] -= 1;
                 x[m-1] = 1;
                 y[m-2] = base-1;
                 y[m-1] -=1;
                 z[m-2] += 1;
                 z[m-1] = 1;
-            } else if(z[m-2]==base-1 && y[m-1]!=1) {
+            } else if(z[m-2]==base-1 && y[m-1]!=1) { // IV.2.iii.b
                 x[m-2] -= 1;
                 x[m-1] = 2
                 y[m-2] = base-1;
                 y[m-1] -= 2;
                 z[m-2] = 0;
                 z[m-1] = 3;
-            } else if(z[m-1]==base-1 && y[m-1]==1) {
+            } else if(z[m-1]==base-1 && y[m-1]==1) {    // IV.2.iii.c
                 x[m-2] -= 1;
                 x[m-1] = 1;
                 y[m-2] = base-1;
@@ -764,56 +765,61 @@ function algorithm_4(digits,config,base) {
                 z[m-1] = 3;
             }
         }
-    } else if(x[m-1] + c[m-1]==0 && y[m-1]==base-1) {
+    } else if(x[m-1] + c[m-1]==0 && y[m-1]==base-1) {   // IV.3
         x[m-1] = 1;
         y[m-2] -= 1;
         y[m-1] = base-2;
         z[m-2] += 1;
         z[m-1] = 1;
-    } else if(x[m-1]+c[m-1]==2 && x[m-1]==0 && c[m-1]==2) {
-        if(z[m-1]!=base-1) {
+    } else if(x[m-1]+c[m-1]==2 && x[m-1]==0 && c[m-1]==2) { // IV.4
+        if(z[m-1]!=base-1) {    // IV.4.i
             y[m-1] -= 1;
             z[m-1] += 1;
-        } else if(z[m-1]==base-1 && z[m-2]!=base-1) {
-            if(y[m-2] != 0) {
+        } else if(z[m-1]==base-1 && z[m-2]!=base-1) {   // IV.4.ii
+            if(y[m-2] != 0) {   // IV.4.ii.a
                 x[m-1] = 1;
                 y[m-2] -= 1;
                 y[m-1] -= 2;
                 z[m-2] += 1;
                 z[m-1] = 1;
-            } else if(y[m-2]==0) {
-                if(z[m-1]==base-1 && z[m-2]==base-1) {
-                    if(y[m-1]<base-2) {
-                        if(y[m-2]!=base-1) {
-                            x[m-2] -= 1;
-                            x[m-1] = base-2;
-                            y[m-2] += 1;
-                            y[m-1] += 2;
-                            z[m-2] = base-2;
-                            z[m-1] = base-2;
-                        } else {
-                            x[m-1] = base-2;
-                            y[m-2] = 0;
-                            y[m-1] += 2;
-                            z[m-2] = base-2;
-                            z[m-1] = base-2;
-                        }
-                    } else {
-                        if(y[m-2] >= 1) {
-                            x[m-1] = 2;
-                            y[m-2] -= 1;
-                            y[m-1] -= 3;
-                            z[m-2] = 0;
-                            z[m-1] = 3;
-                        } else {
-                            x[m-2] -= 1;
-                            x[m-1] = 2;
-                            y[m-2] = base-1;
-                            y[m-1] -= 3;
-                            z[m-2] = 0;
-                            z[m-1] = 3;
-                        }
-                    }
+            } else if(y[m-2]==0) {  //IV.4.ii.b
+                x[m-2] -= 1;
+                x[m-1] = 1;
+                y[m-2] = base-2;
+                y[m-1] -= 2;
+                z[m-2] += 1;
+                z[m-1] = 1;
+            }
+        } else if(z[m-1]==base-1 && z[m-2]==base-1) {   // IV.4.iii
+            if(y[m-1]<base-2) { // IV.4.iii.a
+                if(y[m-2]!=base-1) {
+                    x[m-2] -= 1;
+                    x[m-1] = base-2;
+                    y[m-2] += 1;
+                    y[m-1] += 2;
+                    z[m-2] = base-2;
+                    z[m-1] = base-2;
+                } else {
+                    x[m-1] = base-2;
+                    y[m-2] = 0;
+                    y[m-1] += 2;
+                    z[m-2] = base-2;
+                    z[m-1] = base-2;
+                }
+            } else {    // IV.4.iii.b
+                if(y[m-2] >= 1) {
+                    x[m-1] = 2;
+                    y[m-2] -= 1;
+                    y[m-1] -= 3;
+                    z[m-2] = 0;
+                    z[m-1] = 3;
+                } else {
+                    x[m-2] -= 1;
+                    x[m-1] = 2;
+                    y[m-2] = base-1;
+                    y[m-1] -= 3;
+                    z[m-2] = 0;
+                    z[m-1] = 3;
                 }
             }
         }
@@ -853,7 +859,7 @@ function algorithm_4(digits,config,base) {
             if(y[m-1] > 1) {
                 x[m-1] = 2;
                 y[m-2] -= 1;
-                y[m-1] -= 1;
+                y[m-1] -= 2;
                 z[m-2] = 1;
                 z[m-1] = 1;
             } else if(y[m-1]==0) {
@@ -914,13 +920,11 @@ function algorithm_5(digits,config,base) {
     }
     s[m] = 1;
     s[m-1] = 1;
-    console.log('s',s);
     let digits2 = big_sub(digits,s,base);
-    console.log('digits2',digits2);
     if(digits2[m-1]==0 || digits2[m]==0) {
         s[m] = 2;
         s[m-1] = 2;
-        digits2 = big_sub(digits,s);
+        digits2 = big_sub(digits,s,base);
     }
     const ps = decide_type(digits2,base);
     ps[0][m-1] += s[m-1];
@@ -930,17 +934,11 @@ function algorithm_5(digits,config,base) {
 }
 
 function decide_type(digits,base=10) {
-    console.log(digits.join(''));
     const l = digits.length;
     const odd = l%2==1;
     const m = l >> 1;
     const special = !odd && (digits[m-1]==0 || digits[m]==0);
     const config = [[undefined,undefined],[undefined],[]];
-    for(let i=0;i<l-2;i++) {
-        config[0].push(undefined);
-        config[1].push(undefined);
-        config[2].push(undefined);
-    }
     const [dl1,dl2,dl3] = [digits[l-1],digits[l-2],digits[l-3]];
     const d0 = digits[0];
     let z1;
@@ -955,7 +953,7 @@ function decide_type(digits,base=10) {
         config[2][0] = z1;
         config[2][l-3] = z1;
         if(odd) {
-            return algorithm_1(digits,config,base);
+            return algorithm_1(m,digits,config,base);
         } else if(!special) {
             return algorithm_2(digits,config,base);
         } else {
@@ -971,7 +969,7 @@ function decide_type(digits,base=10) {
         config[2][0] = 1;
         config[2][l-3] = 1;
         if(odd) {
-            return algorithm_1(digits,config,base)
+            return algorithm_1(m,digits,config,base)
         } else if(!special) {
             return algorithm_2(digits,config,base)
         } else {
@@ -988,7 +986,7 @@ function decide_type(digits,base=10) {
         config[2][0] = z1;
         config[2][l-3] = z1;
         if(odd) {
-            return algorithm_1(digits,config,base)
+            return algorithm_1(m,digits,config,base)
         } else if(!special) {
             return algorithm_2(digits,config,base)
         } else {
@@ -1004,7 +1002,7 @@ function decide_type(digits,base=10) {
         config[2][0] = 1;
         config[2][l-3] = 1;
         if(odd) {
-            return algorithm_1(digits,config,base)
+            return algorithm_1(m,digits,config,base)
         } else if(!special) {
             return algorithm_2(digits,config,base)
         } else {
@@ -1013,15 +1011,15 @@ function decide_type(digits,base=10) {
    } else if(dl1==1 && dl2==0 && dl3<=3 && D(d0-dl3,base) != 0) {
         // A5
         console.log('A5');
-        config[0][l-1] = base-1;
+        config[0][l-2] = base-1;
         config[0][0] = base-1;
-        config[1][l-2] = dl3+1;
+        config[1][l-3] = dl3+1;
         config[1][0] = dl3+1;
         z1 = D(d0-dl3,base);
         config[2][0] = z1;
-        config[2][l-3] = z1;
+        config[2][l-4] = z1;
         if(!odd) {
-            return algorithm_1(digits,config,base)
+            return algorithm_1(m-1,digits,config,base)
         } else if(!special) {
             return algorithm_2(digits,config,base)
         } else {
@@ -1030,14 +1028,14 @@ function decide_type(digits,base=10) {
     } else if(dl1==1 && dl2==0 && dl3<=2 && D(d0-dl3,base) == 0) {
         // A6
         console.log('A6');
-        config[0][l-1] = base-1;
+        config[0][l-2] = base-1;
         config[0][0] = base-1;
-        config[1][l-2] = dl3+2;
+        config[1][l-3] = dl3+2;
         config[1][0] = dl3+2;
         config[2][0] = base-1;
-        config[2][l-3] = base-1;
+        config[2][l-4] = base-1;
         if(!odd) {
-            return algorithm_1(digits,config,base)
+            return algorithm_1(m-1,digits,config,base)
         } else if(!special) {
             return algorithm_2(digits,config,base)
         } else {
@@ -1238,3 +1236,30 @@ function do_it() {
 }
 do_it_button.addEventListener('click',do_it);
 
+const test_button = document.getElementById('big-test');
+const test_length_input = document.getElementById('test-length');
+const test_count_input = document.getElementById('test-count');
+const test_result = document.getElementById('test-result');
+function big_test() {
+    console.clear();
+    const l = parseInt(test_length_input.value);
+    const num_reps = parseInt(test_count_input.value);
+    const max = 10**l;
+    let n;
+    console.info('l is',l);
+    console.info('max is',max);
+    try {
+        for(let i=0;i<num_reps;i++) {
+            n = Math.floor(Math.random()*max);
+            test(n);
+        }
+    } catch(e) {
+        console.error('N was',n);
+        console.error(e);
+        test_result.textContent = 'Failed';
+        return;
+    }
+    test_result.textContent = 'OK';
+    console.info('OK');
+}
+test_button.addEventListener('click',big_test);
