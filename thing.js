@@ -1,10 +1,27 @@
 const form = document.getElementById('input');
+const do_it_button = document.getElementById('do-it');
 const n_input = document.getElementById('n');
 const output = document.getElementById('output');
+function check_value() {
+    const n = n_input.value.trim();
+    console.log(typeof(n));
+    if(!n.match(/^\d+$/)) {
+        do_it_button.setAttribute('disabled',true);
+    } else {
+        do_it_button.removeAttribute('disabled');
+    }
+}
+check_value();
+n_input.addEventListener('input',check_value);
+n_input.addEventListener('change',check_value);
+
 function do_it(e) {
-    output.classList.add('show');
     e.preventDefault();
-    const n = n_input.value;
+    output.classList.add('show');
+    const n = n_input.value.trim();
+    if(!n.match(/^\d+$/)) {
+        return false;
+    }
     const palindromes = sum_of_palindromes(n);
     output.innerHTML = '';
     const rows = [];
@@ -37,7 +54,7 @@ function do_it(e) {
 
     output.scrollIntoView({behavior: 'smooth'});
 
-    const TIME_DELAY = 500;
+    const TIME_DELAY = Math.max(500,3000/total.length);
 
     let i = 0;
     let p = 0;
@@ -62,6 +79,6 @@ function do_it(e) {
             setTimeout(reveal_final,TIME_DELAY);
         }
     }
-    setTimeout(reveal,TIME_DELAY*5);
+    setTimeout(reveal,total.length*TIME_DELAY/2);
 }
 form.addEventListener('submit',do_it);

@@ -1,7 +1,7 @@
 html {
     font-size: 2vw;
 }
-@media screen and (max-width:600px) {
+@media screen and (max-width:700px) {
     html {
         font-size: 14px;
     }
