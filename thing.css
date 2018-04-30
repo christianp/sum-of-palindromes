@@ -1,0 +1,76 @@
+html {
+    font-size: 2vw;
+}
+@media screen and (max-width:600px) {
+    html {
+        font-size: 14px;
+    }
+}
+body {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+main {
+}
+section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1em 0;
+}
+footer {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #333;
+}
+
+#do-it {
+    background: purple;
+    color: white;
+    font-size: 2em;
+    opacity: 1;
+    transition: opacity 0.5s;
+    border: none;
+}
+#do-it:disabled {
+    opacity: 0;
+}
+
+#n {
+    display: inline-block;
+    margin: 0;
+    border: none;
+    border-bottom: 2px solid black;
+    font-size: 1rem;
+    text-align: center;
+}
+
+#output:not(.show) {
+    display: none;
+}
+
+#output .digit {
+    opacity: 1;
+    transition: opacity 1s, transform 1s;
+    transform: rotate(0deg) scale(1.0);
+    display: inline-block;
+    text-align: center;
+    width: 1em;
+}
+#output .digit:not(.revealed) {
+    opacity: 0;
+}
+.row {
+    display: flex;
+    justify-content: end;
+}
+#output .row:not(.final) .digit:not(.revealed) {
+    transform: rotate(3000deg) scale(0);
+}
+
+#output .row.final {
+    padding-top: 0.1em;
+    border-top: 1px solid black;
+}

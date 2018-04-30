@@ -1,33 +1,34 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
-        <style type="text/css">
-            #output {
-                display:inline-block;
-                text-align: right;
-                letter-spacing: 1em;
-            }
-        </style>
+        <title>Anna's palindromic magic trick</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="thing.css"></link>
     </head>
     <body>
-        <section>
-            <div>
-                <input type="text" id="n" value="625423">
-                <button id="do-it">Do it</button>
-            </div>
-            <pre id="output"></pre>
-        </section>
-        <section>
-            <button id="big-test">Test</button>
-            <input id="test-length" type="number" value="6">
-            digit numbers
-            <input id="test-count" type="number" value="10000">
-            times
-            <p id="test-result"></p>
-        </section>
+        <header>
+        </header>
+        <main>
+            <section>
+                <h1>I can write <em>any</em> positive number as a sum of three palindromes</h1>
+                <p>Don't believe me? Then scroll down, and prepare to be</p>
+                <h2>AMAZED!</h2>
+            </section>
+            <section>
+                <form id="input">
+                    <p>Please write</p>
+                    <input type="text" id="n" value="625423">
+                    <p>as a sum of three palindromes</p>
+                    <button type="submit" id="do-it">Abradacadarba!</button>
+                </form>
+            </section>
+            <section id="output">
+            </section>
+        </main>
         <footer>
             <p>Based on <a href="https://arxiv.org/abs/1602.06208v2">Every positive integer is a sum of three palindromes</a></p>
         </footer>
+        <script src="3palindromes.js"></script>
         <script src="thing.js"></script>
     </body>
 </html>
