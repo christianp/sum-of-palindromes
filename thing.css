@@ -7,12 +7,20 @@ body {
 }
 p, h1, h2, h3 {
     max-width: 80vw;
-    margin: 1rem auto;
+    margin: 0 auto;
+}
+*~p, *~h1, *~h2, *~h3 {
+    margin-top: 1rem;
+}
+.big {
+    font-size: 2em;
+    font-weight: bold;
 }
 .amazing {
     font-size: 4em;
     font-style: italic;
     animation: pulse 1s alternate-reverse infinite cubic-bezier(.86,0,.07,1);
+    margin: 1rem auto;
 }
 .wobble {
     animation: wobble 0.1s alternate-reverse infinite linear;
@@ -50,11 +58,13 @@ footer {
     display: flex;
     flex-direction: column;
     justify-content: end;
+    padding-bottom: 1rem;
 }
 
 #do-it {
     background: hsl(190,100%,20%);
     color: white;
+    margin-top: 1rem;
     font-size: 2em;
     opacity: 1;
     transition: opacity 0.5s;
@@ -68,7 +78,7 @@ footer {
 
 #n {
     display: inline-block;
-    margin: 0;
+    margin: 1rem 0;
     border: none;
     border-bottom: 2px solid black;
     font-size: 2rem;
@@ -77,19 +87,14 @@ footer {
 }
 
 body.complete .row.final, body.complete #first-row {
-    animation: incredible 2s 1s alternate-reverse infinite;
+    animation: incredible 1s 1s alternate infinite linear;
 }
 @keyframes incredible {
     0% { color: hsl(0,100%,0%); }
-    10% { color: hsl(240,0%,50%); }
     20% { color: hsl(240,100%,50%); }
-    30% { color: hsl(50,0%,50%); }
     40% { color: hsl(50,100%,50%); }
-    50% { color: hsl(130,0%,50%); }
     60% { color: hsl(130,100%,50%); }
-    70% { color: hsl(310,0%,50%); }
     80% { color: hsl(310,100%,50%); }
-    90% { color: hsl(270,0%,50%); }
     100% { color: hsl(270,100%,50%); }
 }
 

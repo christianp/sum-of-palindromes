@@ -33,6 +33,9 @@ function do_it(e) {
         first_row.appendChild(cell);
     }
     const palindromes = sum_of_palindromes(n);
+    while(palindromes.length<3) {
+        palindromes.push([0]);
+    }
     output.innerHTML = '';
     const rows = [];
     for(let p of palindromes) {
