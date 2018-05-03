@@ -1,15 +1,37 @@
 html {
-    font-size: 2vw;
-}
-@media screen and (max-width:700px) {
-    html {
-        font-size: 14px;
-    }
+    font-size: 3vw;
 }
 body {
     text-align: center;
-    max-width: 800px;
     margin: 0 auto;
+}
+p, h1, h2, h3 {
+    max-width: 80vw;
+    margin: 1rem auto;
+}
+.amazing {
+    font-size: 4em;
+    font-style: italic;
+    animation: pulse 1s alternate-reverse infinite cubic-bezier(.86,0,.07,1);
+}
+.wobble {
+    animation: wobble 0.1s alternate-reverse infinite linear;
+}
+@keyframes pulse {
+    from {
+        transform: scale(0.9);
+    }
+    to {
+        transform: scale(1.1);
+    }
+}
+@keyframes wobble {
+    from {
+        transform: rotate(-2deg);
+    }
+    to {
+        transform: rotate(2deg);
+    }
 }
 main {
 }
@@ -24,18 +46,24 @@ footer {
     font-size: 0.8rem;
     font-style: italic;
     color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
 #do-it {
-    background: purple;
+    background: hsl(190,100%,20%);
     color: white;
     font-size: 2em;
     opacity: 1;
     transition: opacity 0.5s;
     border: none;
+    padding: 0.2em 1em;
 }
 #do-it:disabled {
     opacity: 0;
+    transition: opacity 0s;
 }
 
 #n {
@@ -43,26 +71,55 @@ footer {
     margin: 0;
     border: none;
     border-bottom: 2px solid black;
-    font-size: 1rem;
+    font-size: 2rem;
     text-align: center;
+    max-width: 90vw;
 }
 
-#output:not(.show) {
+body.complete .row.final, body.complete #first-row {
+    animation: incredible 2s 1s alternate-reverse infinite;
+}
+@keyframes incredible {
+    0% { color: hsl(0,100%,0%); }
+    10% { color: hsl(240,0%,50%); }
+    20% { color: hsl(240,100%,50%); }
+    30% { color: hsl(50,0%,50%); }
+    40% { color: hsl(50,100%,50%); }
+    50% { color: hsl(130,0%,50%); }
+    60% { color: hsl(130,100%,50%); }
+    70% { color: hsl(310,0%,50%); }
+    80% { color: hsl(310,100%,50%); }
+    90% { color: hsl(270,0%,50%); }
+    100% { color: hsl(270,100%,50%); }
+}
+
+#output {
+    margin: 0 auto;
+}
+
+body:not(.show) .hide-before-number {
+    display: none;
+}
+body:not(.complete) .hide-before-complete {
     display: none;
 }
 
-#output .digit {
+.digit {
     opacity: 1;
     transition: opacity 1s, transform 1s;
     transform: rotate(0deg) scale(1.0);
     display: inline-block;
     text-align: center;
     width: 1em;
+    font-size: 1.3rem;
 }
 #output .digit:not(.revealed) {
     opacity: 0;
 }
-.row {
+#first-row {
+    white-space: nowrap;
+}
+#output .row {
     display: flex;
     justify-content: end;
 }
@@ -73,4 +130,23 @@ footer {
 #output .row.final {
     padding-top: 0.1em;
     border-top: 1px solid black;
+    font-weight: bold;
+}
+
+.row:not(:first-child):not(:last-child)::before {
+    content: '+';
+    flex-grow: 1;
+    text-align: left;
+}
+
+@media screen and (max-width:700px) {
+    html {
+        font-size: 18px;
+    }
+    .amazing {
+    font-size: 3em;
+    }
+    .digit {
+        font-size: 1rem;
+    }
 }

@@ -1,32 +1,60 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Anna's palindromic magic trick</title>
+        <title>The incredible palindromic hat-trick</title>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="thing.css"></link>
     </head>
     <body>
         <header>
         </header>
         <main>
-            <section>
-                <h1>I can write <em>any</em> positive number as a sum of three palindromes</h1>
-                <p>Don't believe me? Then scroll down, and prepare to be</p>
-                <h2>AMAZED!</h2>
+            <section style="background: hsl(60,100%,80%);">
+                <p>Would you like to see something</p>
+                <p class="amazing">AMAZING?</p>
             </section>
-            <section>
+            <section style="background: hsl(350,100%,80%);">
+                <h1>I can write <em>any</em> positive number as a sum of three palindromes.</h1>
+            </section>
+            <section style="background: hsl(240,100%,80%);">
+                <p>Yes,</p>
+                <p class="amazing">any</p>
+                <p>whole number bigger than zero.</p>
+            </section>
+            <section style="background: hsl(180,100%,80%);">
+                <p>Don't believe me?</p>
+                <p>Then scroll down, and prepare to be</p>
+                <p class="amazing wobble">AMAZED!</p>
+            </section>
+            <section style="background: hsl(10,100%,80%);">
                 <form id="input">
-                    <p>Please write</p>
-                    <input type="text" id="n" value="625423">
-                    <p>as a sum of three palindromes</p>
-                    <button type="submit" id="do-it">Abradacadarba!</button>
+                    <p>Please write a number in this box:</p>
+                    <input type="text" id="n" value="" autocomplete="off">
+                    <p>And I will write it as a sum of three palindromes</p>
+                    <p><strong>BEFORE YOUR VERY EYES!</strong></p>
+                    <button type="submit" id="do-it">!AbradacadarbA!</button>
                 </form>
             </section>
-            <section id="output">
+            <section id="output-section" class="hide-before-number">
+                <div id="first-row"></div>
+                <div>=</div>
+                <div id="output"></div>
+            </section>
+            <section class="hide-before-complete" style="background: hsl(80,100%,80%);">
+                <p class="amazing wobble">INCREDIBLE!</p>
+                <p>It really does work for any number - scroll back up and try another one.</p>
             </section>
         </main>
         <footer>
-            <p>Based on <a href="https://arxiv.org/abs/1602.06208v2">Every positive integer is a sum of three palindromes</a></p>
+            <p>
+                This incredible mathematical hat-trick is based on the paper
+                <br>
+                <a style="font-style: normal;" href="https://arxiv.org/abs/1602.06208v2">Every positive integer is a sum of three palindromes</a>
+                <br>
+                by Javier Cilleruelo, Florian Luca and Lewis Baxter.
+            </p>
+            <p>It was programmed by <a href="http://somethingorotherwhatever.com">Christian Lawson-Perfect</a>.</p>
         </footer>
         <script src="3palindromes.js"></script>
         <script src="thing.js"></script>

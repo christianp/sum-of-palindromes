@@ -1,4 +1,3 @@
-console.clear();
 function digits_of(n) {
     return (n+'').split('').map(d=>parseInt(d));
 }
