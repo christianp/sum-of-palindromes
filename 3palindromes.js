@@ -28,6 +28,9 @@ function big_sub(a,b,base) {
             a[i+1] -= 1;
         }
     }
+    while(a.length && a[a.length-1]==0) {
+        a.pop();
+    }
     return a;
 }
 
@@ -145,7 +148,7 @@ function sum_four_digits(n,digits,base) {
 function sum_five_digits(n,digits,base) {
     const [d0,d1,d2,d3,d4] = digits;
     if(d4!=1) {
-        return decide_type(digits,base);
+        return main_algorithm(digits,base);
     }
     const r = digits_to_int([1,d3,0,d3,1],base);
     const m = n - r;
@@ -185,11 +188,9 @@ function sum_six_digits(n,digits,base=10) {
     if(d5!=1) {
         const l = 6;
         const m = 3;
-        const [x,y,z] = [
-            [null,d5,0,0],
-            [null,d4-1,0,0],
-            [null,D(d0-d5-d4+1,base),0,0]
-        ];
+        const {type, config} = decide_type(digits,base);
+        const [x,y,z] = [[],[],[]];
+        [x[1],y[1],z[1]] = [config[0][0],config[1][0],config[2][0]];
         const c = [];
         c[1] = idiv(x[1]+y[1]+z[1], base);
         x[2] = z[1] <= digits[2*m-3]-1 ? D(digits[2*m-2]-y[1], base) : D(digits[2*m-2]-y[1]-1, base);
@@ -495,7 +496,7 @@ function sum_six_digits(n,digits,base=10) {
                 }
             } else if(d4==3) {
                 const y = D(d1-1-1,base)==0 ? 3 : D(d1-1-1,base)==base-1 ? 2 : 1;
-                c[1] = idiv(2+y+D(d1-1-y,base),base);
+                c[1] = idiv(2+y+D(d1-1-y,base)-d1,base);
                 c[2] = idiv(base-y-1+D(d2+y+2,base)+base-1-d2,base);
                 return [
                     [1,0,base-y-1-c[1],base-y-1-c[1],0,1],
@@ -517,7 +518,6 @@ function sum_six_digits(n,digits,base=10) {
 }
 
 function algorithm_1(m,digits,config,base) {
-    console.log('algo 1');
     const l = digits.length;
     const [x,y,z] = [[],[],[]];
     [x[1],y[1],z[1]] = [config[0][0],config[1][0],config[2][0]];
@@ -533,6 +533,21 @@ function algorithm_1(m,digits,config,base) {
         z[i] = D(digits[i-1] - x[i] - y[i] - c[i-1], base);
         c[i] = idiv(x[i] + y[i] + z[i] + c[i-1] - digits[i-1], base);
     }
+    x[m+1] = 0;
+    if(c[m]==1) {
+        // do nothing;
+    } else if(c[m]==0) {
+        x[m+1] = 1;
+    } else if(c[m]==2) {
+        if(z[m]!=base-1) {
+            y[m] -= 1;
+            z[m] += 1;
+        } else {
+            x[m+1] = 1;
+            y[m] -= 1;
+            z[m] = 0;
+        }
+    }
     for(let i=1;i<=m;i++) {
         config[0][i-1] = x[i];
         config[0][2*m+1-i] = x[i];
@@ -541,27 +556,11 @@ function algorithm_1(m,digits,config,base) {
         config[2][i-1] = z[i];
         config[2][2*m-i-1] = z[i];
     }
-    if(c[m]==1) {
-        config[0][m] = 0;
-    } else if(c[m]==0) {
-        config[0][m] = 1;
-    } else if(c[m]==2) {
-        if(z[m]!=base-1) {
-            config[1][m] -= 1;
-            config[1][m-1] -= 1;
-            config[2][m-1] += 1;
-        } else {
-            config[0][m] = 1;
-            config[1][m] -= 1;
-            config[1][m-1] -= 1;
-            config[2][m-1] = 0;
-        }
-    }
+    config[0][m] = x[m+1];
     return config;
 }
 
 function algorithm_2(digits,config,base) {
-    console.log('algo 2');
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
@@ -581,34 +580,32 @@ function algorithm_2(digits,config,base) {
     x[m] = 0;
     y[m] = D(digits[m-1]-z[m-1] - c[m-1],base);
     c[m] = idiv(x[m] + y[m] + z[m-1] + c[m-1] - digits[m-1], base);
-    
-    if(c[m]==1) {
+
+    if(c[m]==1) {   // II.1
         // do nothing
-    } else if(c[m]==0) {
-        if(y[m]!=0) {
+    } else if(c[m]==0) {    // II.2
+        if(y[m]!=0) {   // II.2.i
             x[m] = 1;
             y[m] -= 1;
-        } else {
-            if(y[m-1]!=0) {
+        } else {    // II.2.ii
+            if(y[m-1]!=0) { // II.2.ii.a
                 x[m] = 1;
                 y[m] = base-2;
                 y[m-1] -= 1;
                 z[m-1] += 1;
-            } else {
-                if(z[m-1]!=0) {
-                    y[m] = 1;
-                    y[m-1] = 1;
-                    z[m-1] -= 1;
-                } else {
-                    x[m-1] -= 1;
-                    x[m] = 1;
-                    y[m] = base-4;
-                    y[m-1] = base-1;
-                    z[m-1] = 2;
-                }
+            } else if(y[m-1]==0 && z[m-1]!=0) { // II.2.ii.b
+                y[m] = 1;
+                y[m-1] = 1;
+                z[m-1] -= 1;
+            } else if(y[m-1]==0 && z[m-1]==0) { // II.2.ii.c
+                x[m-1] -= 1;
+                x[m] = 1;
+                y[m] = base-4;
+                y[m-1] = base-1;
+                z[m-1] = 2;
             }
         }
-    } else if(c[m]==2) {
+    } else if(c[m]==2) {    // II.3
         x[m] = 1;
         y[m-1] -= 1;
         y[m] = base-2;
@@ -630,7 +627,6 @@ function algorithm_2(digits,config,base) {
 }
 
 function algorithm_3(digits,config,base) {
-    console.log('algo 3');
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
@@ -693,7 +689,6 @@ function algorithm_3(digits,config,base) {
 }
 
 function algorithm_4(digits,config,base) {
-    console.log('algo 4');
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
@@ -910,7 +905,6 @@ function algorithm_4(digits,config,base) {
 }
 
 function algorithm_5(digits,config,base) {
-    console.log('algo 5');
     const l = digits.length;
     const m = l >> 1;
     const s = [];
@@ -925,25 +919,67 @@ function algorithm_5(digits,config,base) {
         s[m-1] = 2;
         digits2 = big_sub(digits,s,base);
     }
-    const ps = decide_type(digits2,base);
+    const ps = main_algorithm(digits2,base);
     ps[0][m-1] += s[m-1];
     ps[0][m] += s[m];
     
     return ps;
 }
 
-function decide_type(digits,base=10) {
+function main_algorithm(digits,base=10) {
     const l = digits.length;
     const odd = l%2==1;
     const m = l >> 1;
-    const special = !odd && (digits[m-1]==0 || digits[m]==0);
-    const config = [[undefined,undefined],[undefined],[]];
+    const {type,config, special} = decide_type(digits,base=10);
+    switch(type) {
+        case 'A1':
+        case 'A2':
+        case 'A3':
+        case 'A4':
+            if(odd) {
+                return algorithm_1(m,digits,config,base);
+            } else if(!special) {
+                return algorithm_2(digits,config,base);
+            } else {
+                return algorithm_5(digits,config,base)
+            }
+        case 'A5':
+        case 'A6':
+            if(!odd) {
+                return algorithm_1(m-1,digits,config,base)
+            } else if(!special) {
+                return algorithm_2(digits,config,base)
+            } else {
+                return algorithm_5(digits,config,base)
+            }
+        case 'B1':
+        case 'B2':
+        case 'B3':
+        case 'B4':
+        case 'B5':
+        case 'B6':
+        case 'B7':
+            if(odd) {
+                return algorithm_3(digits,config,base)
+            } else if(!special) {
+                return algorithm_4(digits,config,base)
+            } else {
+                return algorithm_5(digits,config,base)
+            }
+    }
+}
+
+function decide_type(digits,base=10) {
+    const l = digits.length;
+    const m = l >> 1;
     const [dl1,dl2,dl3] = [digits[l-1],digits[l-2],digits[l-3]];
     const d0 = digits[0];
+    const config = [[],[],[]];
+    let type;
     let z1;
+    let special = digits[m] == 0 || digits[m-1]==0;
     if(dl2>2 && D(d0-dl1-dl2+1,base) != 0) {
-        // A1
-        console.log('A1');
+        type = 'A1';
         config[0][l-1] = dl1;
         config[0][0] = dl1;
         config[1][l-2] = dl2-1;
@@ -951,32 +987,18 @@ function decide_type(digits,base=10) {
         z1 = D(d0-dl1-dl2+1,base);
         config[2][0] = z1;
         config[2][l-3] = z1;
-        if(odd) {
-            return algorithm_1(m,digits,config,base);
-        } else if(!special) {
-            return algorithm_2(digits,config,base);
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl2>2 && D(d0-dl1-dl2+1,base) == 0) {
-        // A2
-        console.log('A2');
+        type = 'A2';
         config[0][l-1] = dl1;
         config[0][0] = dl1;
         config[1][l-2] = dl2-2;
         config[1][0] = dl2-2;
         config[2][0] = 1;
         config[2][l-3] = 1;
-        if(odd) {
-            return algorithm_1(m,digits,config,base)
-        } else if(!special) {
-            return algorithm_2(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl2 <= 2 && dl1!=1 && D(d0 - dl1+2,base) != 0) {
-        // A3
-        console.log('A3');
+        type = 'A3';
         config[0][l-1] = dl1-1;
         config[0][0] = dl1-1;
         config[1][l-2] = base-1;
@@ -984,32 +1006,18 @@ function decide_type(digits,base=10) {
         z1 = D(d0-dl1+2,base);
         config[2][0] = z1;
         config[2][l-3] = z1;
-        if(odd) {
-            return algorithm_1(m,digits,config,base)
-        } else if(!special) {
-            return algorithm_2(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl2 <= 2 && dl1!=1 && D(d0 - dl1+2,base) == 0) {
-        // A4
-        console.log('A4');
+        type = 'A4';
         config[0][l-1] = dl1-1;
         config[0][0] = dl1-1;
         config[1][l-2] = base-2;
         config[1][0] = base-2;
         config[2][0] = 1;
         config[2][l-3] = 1;
-        if(odd) {
-            return algorithm_1(m,digits,config,base)
-        } else if(!special) {
-            return algorithm_2(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
    } else if(dl1==1 && dl2==0 && dl3<=3 && D(d0-dl3,base) != 0) {
-        // A5
-        console.log('A5');
+        type = 'A5';
         config[0][l-2] = base-1;
         config[0][0] = base-1;
         config[1][l-3] = dl3+1;
@@ -1017,32 +1025,18 @@ function decide_type(digits,base=10) {
         z1 = D(d0-dl3,base);
         config[2][0] = z1;
         config[2][l-4] = z1;
-        if(!odd) {
-            return algorithm_1(m-1,digits,config,base)
-        } else if(!special) {
-            return algorithm_2(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==1;
     } else if(dl1==1 && dl2==0 && dl3<=2 && D(d0-dl3,base) == 0) {
-        // A6
-        console.log('A6');
+        type = 'A6';
         config[0][l-2] = base-1;
         config[0][0] = base-1;
         config[1][l-3] = dl3+2;
         config[1][0] = dl3+2;
         config[2][0] = base-1;
         config[2][l-4] = base-1;
-        if(!odd) {
-            return algorithm_1(m-1,digits,config,base)
-        } else if(!special) {
-            return algorithm_2(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==1;
     } else if(dl1==1 && dl2<=2 && dl3>=4 && D(d0-dl3,base) != 0) {
-        // B1
-        console.log('B1');
+        type = 'B1';
         config[0][l-1] = 1;
         config[0][l-2] = dl2;
         config[0][1] = dl2;
@@ -1052,16 +1046,9 @@ function decide_type(digits,base=10) {
         z1 = D(d0-dl3,base);
         config[2][l-4] = z1;
         config[2][0] = z1;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl1==1 && dl2<=2 && dl3>=3 && D(d0-dl3,base) == 0) {
-        // B2
-        console.log('B2');
+        type = 'B2';
         config[0][l-1] = 1;
         config[0][l-2] = dl2;
         config[0][1] = dl2;
@@ -1070,16 +1057,9 @@ function decide_type(digits,base=10) {
         config[1][0] = dl3-2;
         config[2][l-4] = 1;
         config[2][0] = 1;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl1==1 && (dl2==1 || dl2==2) && (dl3==0 || dl3==1) && d0==0) {
-        // B3
-        console.log('B3');
+        type = 'B3';
         config[0][l-1] = 1;
         config[0][l-2] = dl2-1;
         config[0][1] = dl2-1;
@@ -1088,16 +1068,9 @@ function decide_type(digits,base=10) {
         config[1][0] = base-2;
         config[2][l-4] = 1;
         config[2][0] = 1;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl1==1 && (dl2==1 || dl2==2) && (dl3==2 || dl3==3) && d0==0) {
-        // B4
-        console.log('B4');
+        type = 'B4';
         config[0][l-1] = 1;
         config[0][l-2] = dl2;
         config[0][1] = dl2;
@@ -1106,16 +1079,9 @@ function decide_type(digits,base=10) {
         config[1][0] = 1;
         config[2][l-4] = base-2;
         config[2][0] = base-2;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl1==1 && (dl2==1 || dl2==2) && dl3<=2 && d0!=0) {
-        // B5
-        console.log('B5');
+        type = 'B5';
         config[0][l-1] = 1;
         config[0][l-2] = dl2-1;
         config[0][1] = dl2-1;
@@ -1124,16 +1090,9 @@ function decide_type(digits,base=10) {
         config[1][0] = base-1;
         config[2][l-4] = d0;
         config[2][0] = d0;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl1==1 && (dl2==1 || dl2==2) && dl3==3 && D(d0-3,base) != 0) {
-        // B6
-        console.log('B6');
+        type = 'B6';
         config[0][l-1] = 1;
         config[0][l-2] = dl2;
         config[0][1] = dl2;
@@ -1143,16 +1102,9 @@ function decide_type(digits,base=10) {
         z1 = D(d0-3,base);
         config[2][l-4] = z1;
         config[2][0] = z1;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     } else if(dl1==1 && (dl2==1 || dl2==2) && dl3==3 && d0==3) {
-        // B7
-        console.log('B7');
+        type = 'B7';
         config[0][l-1] = 1;
         config[0][l-2] = dl2;
         config[0][1] = dl2;
@@ -1161,14 +1113,9 @@ function decide_type(digits,base=10) {
         config[1][0] = 1;
         config[2][l-4] = 1;
         config[2][0] = 1;
-        if(odd) {
-            return algorithm_3(digits,config,base)
-        } else if(!special) {
-            return algorithm_4(digits,config,base)
-        } else {
-            return algorithm_5(digits,config,base)
-        }
+        special = special && l%2==0;
     }
+    return {type, config, special};
 }
 
 function sum_of_palindromes(n,base=10) {
@@ -1193,31 +1140,11 @@ function sum_of_palindromes(n,base=10) {
         case 6:
             return sum_six_digits(parseInt(n),digits,base);
         default:
-            return decide_type(digits,base);
+            return main_algorithm(digits,base);
     }
 }
 
-function test(n,base=10) {
-    try {
-        const palindromes = sum_of_palindromes(n,base);
-        if(!palindromes.every(is_palindrome)) {
-            console.log(palindromes);
-            throw(new Error("Not every number is a palindrome"));
-        }
-        const digits = digits_of(n,base).reverse();
-        const t = big_sum(palindromes);
-        for(let i=0;i<digits.length;i++) {
-            if(digits[i]!=t[i]) {
-                console.log('total',t);
-                throw(new Error("Doesn't sum to the same thing"));
-            }
-        }
-    } catch(e) {
-        console.error('n:',n);
-        console.error(e);
-        console.log(e.stack);
-        throw(e);
-    }
-    return true;
+try {
+    module.exports = {decide_type, sum_of_palindromes, big_sum, is_palindrome, digits_of};
+} catch(e) {
 }
-
