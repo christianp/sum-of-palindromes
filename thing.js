@@ -21,7 +21,7 @@ function do_it(e) {
     let n = n_input.value.trim().replace(/^0*/,'');
     if(n=='') {
         n = '0';
-    } else if(n.match(/^\d+$/)) {
+    } else if(!n.match(/^\d+$/)) {
         return false;
     }
 
