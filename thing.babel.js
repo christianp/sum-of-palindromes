@@ -1,15 +1,10 @@
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var form = document.getElementById('input');
-var do_it_button = document.getElementById('do-it');
-var n_input = document.getElementById('n');
-var output = document.getElementById('output');
-var output_section = document.getElementById('output-section');
+const form = document.getElementById('input');
+const do_it_button = document.getElementById('do-it');
+const n_input = document.getElementById('n');
+const output = document.getElementById('output');
+const output_section = document.getElementById('output-section');
 function check_value() {
-    var n = n_input.value.trim();
-    console.log(typeof n === 'undefined' ? 'undefined' : _typeof(n));
+    const n = n_input.value.trim();
     if (!n.match(/^\d+$/)) {
         do_it_button.setAttribute('disabled', true);
     } else {
@@ -23,145 +18,62 @@ n_input.addEventListener('change', check_value);
 function do_it(e) {
     e.preventDefault();
     document.body.classList.add('show');
-    var n = n_input.value.trim().replace(/^0*/, '');
-    if (!n.match(/^\d+$/)) {
+    let n = n_input.value.trim().replace(/^0*/, '');
+    if (n == '') {
+        n = '0';
+    } else if (n.match(/^\d+$/)) {
         return false;
     }
-    var n_digits = digits_of(n);
-    var first_row = document.getElementById('first-row');
+
+    const n_digits = digits_of(n);
+    const first_row = document.getElementById('first-row');
     first_row.innerHTML = '';
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-        for (var _iterator = n_digits[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var d = _step.value;
-
-            var cell = document.createElement('span');
-            cell.classList.add('digit');
-            cell.textContent = d;
-            first_row.appendChild(cell);
-        }
-    } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-            }
-        } finally {
-            if (_didIteratorError) {
-                throw _iteratorError;
-            }
-        }
+    for (let d of n_digits) {
+        const cell = document.createElement('span');
+        cell.classList.add('digit');
+        cell.textContent = d;
+        first_row.appendChild(cell);
     }
-
-    var palindromes = sum_of_palindromes(n);
+    const palindromes = sum_of_palindromes(n);
     while (palindromes.length < 3) {
         palindromes.push([0]);
     }
     output.innerHTML = '';
-    var rows = [];
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-        for (var _iterator2 = palindromes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var _p = _step2.value;
-
-            var row = document.createElement('div');
-            row.classList.add('row');
-            output.appendChild(row);
-            var cells = [];
-            rows.push(cells);
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = _p[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var _d2 = _step4.value;
-
-                    var _cell = document.createElement('span');
-                    row.appendChild(_cell);
-                    _cell.classList.add('digit');
-                    _cell.textContent = _d2;
-                    cells.push(_cell);
-                }
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
-                }
-            }
-        }
-    } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
-            }
-        } finally {
-            if (_didIteratorError2) {
-                throw _iteratorError2;
-            }
+    const rows = [];
+    for (let p of palindromes) {
+        const row = document.createElement('div');
+        row.classList.add('row');
+        output.appendChild(row);
+        const cells = [];
+        rows.push(cells);
+        for (let d of p) {
+            const cell = document.createElement('span');
+            row.appendChild(cell);
+            cell.classList.add('digit');
+            cell.textContent = d;
+            cells.push(cell);
         }
     }
-
-    var final_row = document.createElement('div');
+    const final_row = document.createElement('div');
     final_row.setAttribute('class', 'row final');
     output.appendChild(final_row);
-    var final_cells = [];
-    var total = big_sum(palindromes).reverse();
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
-
-    try {
-        for (var _iterator3 = total[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var _d = _step3.value;
-
-            var cell = document.createElement('span');
-            final_row.appendChild(cell);
-            cell.classList.add('digit');
-            cell.textContent = _d;
-            final_cells.push(cell);
-        }
-    } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                _iterator3.return();
-            }
-        } finally {
-            if (_didIteratorError3) {
-                throw _iteratorError3;
-            }
-        }
+    const final_cells = [];
+    const total = big_sum(palindromes).reverse();
+    for (let d of total) {
+        const cell = document.createElement('span');
+        final_row.appendChild(cell);
+        cell.classList.add('digit');
+        cell.textContent = d;
+        final_cells.push(cell);
     }
 
     output_section.scrollIntoView({ behavior: 'smooth' });
     document.body.classList.remove('complete');
 
-    var TIME_DELAY = 900;
+    const TIME_DELAY = 900;
 
-    var i = 0;
-    var p = 0;
+    let i = 0;
+    let p = 0;
     function reveal() {
         rows[p][i].classList.add('revealed');
         rows[p][rows[p].length - 1 - i].classList.add('revealed');

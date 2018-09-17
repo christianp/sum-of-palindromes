@@ -5,7 +5,6 @@ const output = document.getElementById('output');
 const output_section = document.getElementById('output-section');
 function check_value() {
     const n = n_input.value.trim();
-    console.log(typeof(n));
     if(!n.match(/^\d+$/)) {
         do_it_button.setAttribute('disabled',true);
     } else {
@@ -19,10 +18,13 @@ n_input.addEventListener('change',check_value);
 function do_it(e) {
     e.preventDefault();
     document.body.classList.add('show');
-    const n = n_input.value.trim().replace(/^0*/,'');
-    if(!n.match(/^\d+$/)) {
+    let n = n_input.value.trim().replace(/^0*/,'');
+    if(n=='') {
+        n = '0';
+    } else if(n.match(/^\d+$/)) {
         return false;
     }
+
     const n_digits = digits_of(n);
     const first_row = document.getElementById('first-row');
     first_row.innerHTML = '';
