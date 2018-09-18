@@ -126,7 +126,7 @@ body:not(.complete) .hide-before-complete {
 }
 #output .row {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
 }
 #output .row:not(.final) .digit:not(.revealed) {
     transform: rotate(3000deg) scale(0);
