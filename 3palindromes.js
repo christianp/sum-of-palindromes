@@ -1,5 +1,5 @@
 function digits_of(n) {
-    return (n+'').split('').map(d=>parseInt(d));
+    return (n+'').replace(/^0*(.+)/,'$1').split('').map(d=>parseInt(d));
 }
 
 function big_sum(ns,base=10) {
@@ -63,6 +63,12 @@ function is_palindrome(digits) {
 
 function digits_to_int(digits,base=10) {
     return parseInt(digits.map(x=>x+'').join(''),base);
+}
+function remove_leading_zeros(digits) {
+    let i = 0;
+    for(;digits[i]==0 && i<digits.length-1;i++) {
+    }
+    return digits.slice(i);
 }
 function f(digitses,base=10) {
     return digitses;
@@ -1126,22 +1132,25 @@ function sum_of_palindromes(n,base=10) {
     if(is_palindrome(digits)) {
         return [digits];
     }
-    switch(digits.length) {
-        case 1:
-            return [digits];
-        case 2:
-            return sum_two_digits(parseInt(n),digits,base);
-        case 3:
-            return sum_three_digits(parseInt(n),digits,base);
-        case 4:
-            return sum_four_digits(parseInt(n),digits,base);
-        case 5:
-            return sum_five_digits(parseInt(n),digits,base);
-        case 6:
-            return sum_six_digits(parseInt(n),digits,base);
-        default:
-            return main_algorithm(digits,base);
+    function by_digits() {
+        switch(digits.length) {
+            case 1:
+                return [digits];
+            case 2:
+                return sum_two_digits(parseInt(n),digits,base);
+            case 3:
+                return sum_three_digits(parseInt(n),digits,base);
+            case 4:
+                return sum_four_digits(parseInt(n),digits,base);
+            case 5:
+                return sum_five_digits(parseInt(n),digits,base);
+            case 6:
+                return sum_six_digits(parseInt(n),digits,base);
+            default:
+                return main_algorithm(digits,base);
+        }
     }
+    return by_digits().map(remove_leading_zeros);
 }
 
 try {
