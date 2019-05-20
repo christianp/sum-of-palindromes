@@ -1,6 +1,6 @@
-let debugging = {active: true};
+let debugging = {active: false};
 function debug() {
-    if(debugging) {
+    if(debugging.active) {
         console.log(...arguments);
     }
 }
@@ -785,7 +785,7 @@ function algorithm_4(digits,config,base) {
                 y[m-1] -= 2;
                 z[m-2] = 0;
                 z[m-1] = 3;
-            } else if(z[m-1]==base-1 && y[m-1]==1) {    // IV.2.iii.c
+            } else if(z[m-2]==base-1 && y[m-1]==1) {    // IV.2.iii.c
                 debug("IV.2.iii.c");
                 x[m-2] -= 1;
                 x[m-1] = 1;

@@ -9,11 +9,11 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var debugging = {
-  active: true
+  active: false
 };
 
 function debug() {
-  if (debugging) {
+  if (debugging.active) {
     var _console;
 
     (_console = console).log.apply(_console, arguments);
@@ -835,7 +835,7 @@ function algorithm_4(digits, config, base) {
         y[m - 1] -= 2;
         z[m - 2] = 0;
         z[m - 1] = 3;
-      } else if (z[m - 1] == base - 1 && y[m - 1] == 1) {
+      } else if (z[m - 2] == base - 1 && y[m - 1] == 1) {
         // IV.2.iii.c
         debug("IV.2.iii.c");
         x[m - 2] -= 1;

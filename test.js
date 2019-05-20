@@ -38,14 +38,8 @@ function test(n,base=10) {
 }
 
 const bads = [
-    10300003,
-    10300013,
-    10420275,
-    12256004,
-    12281967
+    10321393
 ];
-
-debugging.active = true;
 
 const arg = process.argv[2] || 'every';
 if(!isNaN(arg)) {
@@ -59,13 +53,21 @@ if(!isNaN(arg)) {
     console.log('special',special);
     console.log('config',config);
 } else if(arg=='every') {
-    const limit = parseInt(process.argv[3] || 10**7);
-    for(let i=0;i<limit;i++) {
+    const from = parseInt(process.argv[3] || 0);
+    const limit = parseInt(process.argv[4] || 10**8);
+    let marker = Math.floor(Math.log(from)/Math.log(2));
+    for(let i=from;i<limit;i++) {
+        if(i==marker) {
+            console.log(marker);
+            marker *= 2;
+        }
         if(!test(i)) {
             break;
         }
     }
 } else if(arg=='bads') {
+    debugging.active = true;
+
     for(let n of bads) {
         console.log('\n\n');
         console.log(n);
