@@ -8,6 +8,18 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+var debugging = {
+  active: true
+};
+
+function debug() {
+  if (debugging) {
+    var _console;
+
+    (_console = console).log.apply(_console, arguments);
+  }
+}
+
 function digits_of(n) {
   return (n + '').replace(/^0*(.+)/, '$1').split('').map(function (d) {
     return parseInt(d);
@@ -275,7 +287,7 @@ function sum_six_digits(n, digits) {
     var m = 3;
 
     var _decide_type = decide_type(digits, base),
-        type = _decide_type.type,
+        _type = _decide_type.type,
         config = _decide_type.config;
 
     var x = [],
@@ -721,6 +733,7 @@ function algorithm_3(digits, config, base) {
 }
 
 function algorithm_4(digits, config, base) {
+  console.log('Algorithm IV', digits, config);
   var l = digits.length;
   var m = l >> 1;
   var x = [],
@@ -966,9 +979,11 @@ function algorithm_4(digits, config, base) {
 }
 
 function algorithm_5(digits, config, base) {
+  debug("Algorithm V");
   var l = digits.length;
   var m = l >> 1;
   var s = [];
+  debug("l: ".concat(l, ", m: ").concat(m));
 
   for (var i = 0; i < l; i++) {
     s[i] = 0;
@@ -977,14 +992,55 @@ function algorithm_5(digits, config, base) {
   s[m] = 1;
   s[m - 1] = 1;
   var digits2 = big_sub(digits, s, base);
+  debug("".concat(digits, "\n").concat(s, "\n").concat(digits2));
 
   if (digits2[m - 1] == 0 || digits2[m] == 0) {
+    debug("One of d'm-1 and d'm is 0");
     s[m] = 2;
     s[m - 1] = 2;
     digits2 = big_sub(digits, s, base);
   }
 
-  var ps = main_algorithm(digits2, base);
+  var res = decide_type(digits2, base = 10);
+  var even = res.config[0].length % 2 == 0;
+  var ps;
+
+  if (even) {
+    ps = main_algorithm(digits2, base);
+  } else {
+    var config2 = [[], [], []];
+    var _ref6 = [digits[l - 1], digits[l - 2], digits[l - 3]],
+        dl1 = _ref6[0],
+        dl2 = _ref6[1],
+        dl3 = _ref6[2];
+    var d0 = digits[0];
+
+    if (dl1 == 1 && dl2 <= 2 && dl3 >= 4 && D(d0 - dl3, base) != 0) {
+      type = 'B1';
+      config2[0][l - 1] = 1;
+      config2[0][l - 2] = dl2;
+      config2[0][1] = dl2;
+      config2[0][0] = 1;
+      config2[1][l - 3] = dl3 - 1;
+      config2[1][0] = dl3 - 1;
+      z1 = D(d0 - dl3, base);
+      config2[2][l - 4] = z1;
+      config2[2][0] = z1;
+    } else if (dl1 == 1 && dl2 <= 2 && dl3 >= 3 && D(d0 - dl3, base) == 0) {
+      type = 'B2';
+      config2[0][l - 1] = 1;
+      config2[0][l - 2] = dl2;
+      config2[0][1] = dl2;
+      config2[0][0] = 1;
+      config2[1][l - 3] = dl3 - 2;
+      config2[1][0] = dl3 - 2;
+      config2[2][l - 4] = 1;
+      config2[2][0] = 1;
+    }
+
+    ps = algorithm_4(digits2, config2, base);
+  }
+
   ps[0][m - 1] += s[m - 1];
   ps[0][m] += s[m];
   return ps;
@@ -1000,6 +1056,8 @@ function main_algorithm(digits) {
       type = _decide_type2.type,
       config = _decide_type2.config,
       special = _decide_type2.special;
+
+  debug("Type ".concat(type, "\nConfiguration:\n").concat(config.join('\n')));
 
   switch (type) {
     case 'A1':
@@ -1032,10 +1090,13 @@ function main_algorithm(digits) {
     case 'B6':
     case 'B7':
       if (odd) {
+        debug("Odd number of digits");
         return algorithm_3(digits, config, base);
       } else if (!special) {
+        debug("Not special");
         return algorithm_4(digits, config, base);
       } else {
+        debug("Special");
         return algorithm_5(digits, config, base);
       }
 
@@ -1046,10 +1107,10 @@ function decide_type(digits) {
   var base = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
   var l = digits.length;
   var m = l >> 1;
-  var _ref6 = [digits[l - 1], digits[l - 2], digits[l - 3]],
-      dl1 = _ref6[0],
-      dl2 = _ref6[1],
-      dl3 = _ref6[2];
+  var _ref7 = [digits[l - 1], digits[l - 2], digits[l - 3]],
+      dl1 = _ref7[0],
+      dl2 = _ref7[1],
+      dl3 = _ref7[2];
   var d0 = digits[0];
   var config = [[], [], []];
   var type;
@@ -1211,30 +1272,38 @@ function sum_of_palindromes(n) {
   var digits = digits_of(n).reverse();
 
   if (is_palindrome(digits)) {
+    debug("Is already a palindrome");
     return [digits];
   }
 
   function by_digits() {
     switch (digits.length) {
       case 1:
+        debug("Single-digit number is a palindrome");
         return [digits];
 
       case 2:
+        debug("Two-digit number");
         return sum_two_digits(parseInt(n), digits, base);
 
       case 3:
+        debug("Three-digit number");
         return sum_three_digits(parseInt(n), digits, base);
 
       case 4:
+        debug("Four-digit number");
         return sum_four_digits(parseInt(n), digits, base);
 
       case 5:
+        debug("Five-digit number");
         return sum_five_digits(parseInt(n), digits, base);
 
       case 6:
+        debug("Six-digit number");
         return sum_six_digits(parseInt(n), digits, base);
 
       default:
+        debug("More than 6 digits: use main algorithm");
         return main_algorithm(digits, base);
     }
   }
@@ -1248,7 +1317,8 @@ try {
     sum_of_palindromes: sum_of_palindromes,
     big_sum: big_sum,
     is_palindrome: is_palindrome,
-    digits_of: digits_of
+    digits_of: digits_of,
+    debugging: debugging
   };
 } catch (e) {}
 

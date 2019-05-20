@@ -1,4 +1,4 @@
-const {decide_type, sum_of_palindromes, big_sum, is_palindrome, digits_of} = require('./3palindromes.js');
+const {decide_type, sum_of_palindromes, big_sum, is_palindrome, digits_of, debugging} = require('./3palindromes.js');
 
 function test(n,base=10) {
     let palindromes = [];
@@ -37,6 +37,15 @@ function test(n,base=10) {
     return true;
 }
 
+const bads = [
+    10300003,
+    10300013,
+    10420275,
+    12256004,
+    12281967
+];
+
+debugging.active = true;
 
 const arg = process.argv[2] || 'every';
 if(!isNaN(arg)) {
@@ -54,6 +63,15 @@ if(!isNaN(arg)) {
     for(let i=0;i<limit;i++) {
         if(!test(i)) {
             break;
+        }
+    }
+} else if(arg=='bads') {
+    for(let n of bads) {
+        console.log('\n\n');
+        if(!test(n)) {
+            break;
+        } else {
+            console.log("YEP",n);
         }
     }
 }

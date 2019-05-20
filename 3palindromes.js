@@ -1,3 +1,10 @@
+let debugging = {active: true};
+function debug() {
+    if(debugging) {
+        console.log(...arguments);
+    }
+}
+
 function digits_of(n) {
     return (n+'').replace(/^0*(.+)/,'$1').split('').map(d=>parseInt(d));
 }
@@ -695,6 +702,7 @@ function algorithm_3(digits,config,base) {
 }
 
 function algorithm_4(digits,config,base) {
+    console.log('Algorithm IV',digits,config);
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
@@ -911,21 +919,57 @@ function algorithm_4(digits,config,base) {
 }
 
 function algorithm_5(digits,config,base) {
+    debug("Algorithm V");
     const l = digits.length;
     const m = l >> 1;
     const s = [];
+    debug(`l: ${l}, m: ${m}`);
     for(let i=0;i<l;i++) {
         s[i] = 0;
     }
     s[m] = 1;
     s[m-1] = 1;
     let digits2 = big_sub(digits,s,base);
+    debug(`${digits}\n${s}\n${digits2}`);
     if(digits2[m-1]==0 || digits2[m]==0) {
+        debug("One of d'm-1 and d'm is 0");
         s[m] = 2;
         s[m-1] = 2;
         digits2 = big_sub(digits,s,base);
     }
-    const ps = main_algorithm(digits2,base);
+    const res = decide_type(digits2,base=10);
+    const even = res.config[0].length%2==0;
+    let ps;
+    if(even) {
+        ps = main_algorithm(digits2,base);
+    } else {
+        const config2 = [[],[],[]];
+        const [dl1,dl2,dl3] = [digits[l-1],digits[l-2],digits[l-3]];
+        const d0 = digits[0];
+        if(dl1==1 && dl2<=2 && dl3>=4 && D(d0-dl3,base) != 0) {
+            type = 'B1';
+            config2[0][l-1] = 1;
+            config2[0][l-2] = dl2;
+            config2[0][1] = dl2;
+            config2[0][0] = 1;
+            config2[1][l-3] = dl3-1;
+            config2[1][0] = dl3-1;
+            z1 = D(d0-dl3,base);
+            config2[2][l-4] = z1;
+            config2[2][0] = z1;
+        } else if(dl1==1 && dl2<=2 && dl3>=3 && D(d0-dl3,base) == 0) {
+            type = 'B2';
+            config2[0][l-1] = 1;
+            config2[0][l-2] = dl2;
+            config2[0][1] = dl2;
+            config2[0][0] = 1;
+            config2[1][l-3] = dl3-2;
+            config2[1][0] = dl3-2;
+            config2[2][l-4] = 1;
+            config2[2][0] = 1;
+        }
+        ps = algorithm_4(digits2,config2,base);
+    }
     ps[0][m-1] += s[m-1];
     ps[0][m] += s[m];
     
@@ -937,6 +981,7 @@ function main_algorithm(digits,base=10) {
     const odd = l%2==1;
     const m = l >> 1;
     const {type,config, special} = decide_type(digits,base=10);
+    debug(`Type ${type}\nConfiguration:\n${config.join('\n')}`);
     switch(type) {
         case 'A1':
         case 'A2':
@@ -966,10 +1011,13 @@ function main_algorithm(digits,base=10) {
         case 'B6':
         case 'B7':
             if(odd) {
+                debug("Odd number of digits");
                 return algorithm_3(digits,config,base)
             } else if(!special) {
+                debug("Not special");
                 return algorithm_4(digits,config,base)
             } else {
+                debug("Special");
                 return algorithm_5(digits,config,base)
             }
     }
@@ -1130,23 +1178,31 @@ function sum_of_palindromes(n,base=10) {
     }
     const digits = digits_of(n).reverse();
     if(is_palindrome(digits)) {
+        debug("Is already a palindrome");
         return [digits];
     }
     function by_digits() {
         switch(digits.length) {
             case 1:
+                debug("Single-digit number is a palindrome");
                 return [digits];
             case 2:
+                debug("Two-digit number");
                 return sum_two_digits(parseInt(n),digits,base);
             case 3:
+                debug("Three-digit number");
                 return sum_three_digits(parseInt(n),digits,base);
             case 4:
+                debug("Four-digit number");
                 return sum_four_digits(parseInt(n),digits,base);
             case 5:
+                debug("Five-digit number");
                 return sum_five_digits(parseInt(n),digits,base);
             case 6:
+                debug("Six-digit number");
                 return sum_six_digits(parseInt(n),digits,base);
             default:
+                debug("More than 6 digits: use main algorithm");
                 return main_algorithm(digits,base);
         }
     }
@@ -1154,6 +1210,6 @@ function sum_of_palindromes(n,base=10) {
 }
 
 try {
-    module.exports = {decide_type, sum_of_palindromes, big_sum, is_palindrome, digits_of};
+    module.exports = {decide_type, sum_of_palindromes, big_sum, is_palindrome, digits_of, debugging};
 } catch(e) {
 }
