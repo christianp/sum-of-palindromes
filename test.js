@@ -68,6 +68,7 @@ if(!isNaN(arg)) {
 } else if(arg=='bads') {
     for(let n of bads) {
         console.log('\n\n');
+        console.log(n);
         if(!test(n)) {
             break;
         } else {

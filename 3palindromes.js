@@ -42,6 +42,7 @@ function big_sub(a,b,base) {
 }
 
 function D(n,base) {
+    debug(`D(${n})`);
     if(arguments.length<2) {
         throw(new Error("forgot to give base to D"));
     }
@@ -531,6 +532,7 @@ function sum_six_digits(n,digits,base=10) {
 }
 
 function algorithm_1(m,digits,config,base) {
+    debug('Algorithm I');
     const l = digits.length;
     const [x,y,z] = [[],[],[]];
     [x[1],y[1],z[1]] = [config[0][0],config[1][0],config[2][0]];
@@ -574,6 +576,7 @@ function algorithm_1(m,digits,config,base) {
 }
 
 function algorithm_2(digits,config,base) {
+    debug('Algorithm II');
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
@@ -640,6 +643,7 @@ function algorithm_2(digits,config,base) {
 }
 
 function algorithm_3(digits,config,base) {
+    debug('Algorithm III');
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
@@ -702,47 +706,58 @@ function algorithm_3(digits,config,base) {
 }
 
 function algorithm_4(digits,config,base) {
-    console.log('Algorithm IV',digits,config);
+    debug('Algorithm IV');
     const l = digits.length;
     const m = l >> 1;
     const [x,y,z] = [[],[],[]];
     [x[1],y[1],z[1]] = [config[0][1],config[1][0],config[2][0]];
     const c = [];
     c[1] = idiv(1+y[1]+z[1], base);
+    debug('c1',c[1]);
     x[2] = z[1] <= digits[2*m-4]-1 ? D(digits[2*m-3]-y[1],base) : D(digits[2*m-3]-y[1]-1,base);
     y[2] = D(digits[2*m-4]-z[1]-1,base);
     z[2] = D(digits[1]-x[1]-y[2]-c[1],base);
     c[2] = idiv(x[1]+y[2]+z[2]+c[1]-digits[1],base);
+    debug(`x2: ${x[2]} y2: ${y[2]} z2: ${z[2]} c2: ${c[2]}`);
     for(let i=3;i<=m-2;i++) {
         x[i] = z[i-1]<=digits[2*m-i-2]-1 ? 1 : 0;
         y[i] = D(digits[2*m-i-2]-z[i-1]-1,base);
         z[i] = D(digits[i-1]-x[i-1]-y[i]-c[i-1],base);
         c[i] = idiv(x[i-1]+y[i]+z[i]+c[i-1]-digits[i-1],base);
+        debug(`x${i}: ${x[i]} y${i}: ${y[i]} z${i}: ${z[i]} c${i}: ${c[i]}`);
     }
     x[m-1] = z[m-2] <= digits[m-1]-1 ? 1 : 0;
     y[m-1] = D(digits[m-1]-z[m-2]-1,base);
     z[m-1] = D(digits[m-2]-x[m-2]-y[m-1]-c[m-2],base);
     c[m-1] = idiv(x[m-2]+y[m-1]+z[m-1]+c[m-2]-digits[m-2],base);
+    debug(`x${m-1}: ${x[m-1]} y${m-1}: ${y[m-1]} z${m-1}: ${z[m-1]} c${m-1}: ${c[m-1]}`);
     if(x[m-1]+c[m-1] == 1) { // IV.1
+        debug("no adjustment");
         // do nothing
     } else if(x[m-1]+c[m-1]==0 && y[m-1]!=base-1) { // IV.2
+        debug("IV.2");
         if(z[m-1]!=0) { // IV.2.i
+            debug("IV.2.i");
             y[m-1] += 1;
             z[m-1] -= 1;
         } else if(z[m-1]==0 && y[m-1]!=0) { // IV.2.ii
+            debug("IV.2.ii");
             if(y[m-1]!=1 && z[m-2] != base-1) { // IV.2.ii.a
+                debug("IV.2.ii.a");
                 x[m-1] = 1;
                 y[m-2] -= 1;
                 y[m-1] -= 1;
                 z[m-2] += 1;
                 z[m-1] += 1;
             } else if(y[m-1] != 1 && z[m-2] == base-1) {    // IV.2.ii.b
+                debug("IV.2.ii.b");
                 x[m-1] = 2;
                 y[m-2] -= 1;
                 y[m-1] -= 2;
                 z[m-2] = 0;
                 z[m-1] = 3;
             } else if(y[m-1]==1) {  // IV.2.ii.c
+                debug("IV.2.ii.c");
                 x[m-1] = 1;
                 y[m-2] -= 1;
                 y[m-1] = base-1;
@@ -750,7 +765,9 @@ function algorithm_4(digits,config,base) {
                 z[m-1] = 3;
             }
         } else if(z[m-1]==0 && y[m-2]==0) { // IV.2.iii
+            debug("IV.2.iii");
             if(z[m-2] != base-1) {  // IV.2.iii.a
+                debug("IV.2.iii.a");
                 x[m-2] -= 1;
                 x[m-1] = 1;
                 y[m-2] = base-1;
@@ -758,6 +775,7 @@ function algorithm_4(digits,config,base) {
                 z[m-2] += 1;
                 z[m-1] = 1;
             } else if(z[m-2]==base-1 && y[m-1]!=1) { // IV.2.iii.b
+                debug("IV.2.iii.b");
                 x[m-2] -= 1;
                 x[m-1] = 2
                 y[m-2] = base-1;
@@ -765,6 +783,7 @@ function algorithm_4(digits,config,base) {
                 z[m-2] = 0;
                 z[m-1] = 3;
             } else if(z[m-1]==base-1 && y[m-1]==1) {    // IV.2.iii.c
+                debug("IV.2.iii.c");
                 x[m-2] -= 1;
                 x[m-1] = 1;
                 y[m-2] = base-1;
@@ -774,32 +793,40 @@ function algorithm_4(digits,config,base) {
             }
         }
     } else if(x[m-1] + c[m-1]==0 && y[m-1]==base-1) {   // IV.3
+        debug("IV.3");
         x[m-1] = 1;
         y[m-2] -= 1;
         y[m-1] = base-2;
         z[m-2] += 1;
         z[m-1] = 1;
     } else if(x[m-1]+c[m-1]==2 && x[m-1]==0 && c[m-1]==2) { // IV.4
+        debug("IV.4");
         if(z[m-1]!=base-1) {    // IV.4.i
+            debug("IV.4.i");
             y[m-1] -= 1;
             z[m-1] += 1;
         } else if(z[m-1]==base-1 && z[m-2]!=base-1) {   // IV.4.ii
+            debug("IV.4.ii");
             if(y[m-2] != 0) {   // IV.4.ii.a
+                debug("IV.4.ii.a");
                 x[m-1] = 1;
                 y[m-2] -= 1;
                 y[m-1] -= 2;
                 z[m-2] += 1;
                 z[m-1] = 1;
             } else if(y[m-2]==0) {  //IV.4.ii.b
+                debug("IV.4.ii.b");
                 x[m-2] -= 1;
                 x[m-1] = 1;
-                y[m-2] = base-2;
+                y[m-2] = base-1;
                 y[m-1] -= 2;
                 z[m-2] += 1;
                 z[m-1] = 1;
             }
         } else if(z[m-1]==base-1 && z[m-2]==base-1) {   // IV.4.iii
+            debug("IV.4.iii");
             if(y[m-1]<base-2) { // IV.4.iii.a
+                debug("IV.4.iii.a");
                 if(y[m-2]!=base-1) {
                     x[m-2] -= 1;
                     x[m-1] = base-2;
@@ -815,6 +842,7 @@ function algorithm_4(digits,config,base) {
                     z[m-1] = base-2;
                 }
             } else {    // IV.4.iii.b
+                debug("IV.4.iii.b");
                 if(y[m-2] >= 1) {
                     x[m-1] = 2;
                     y[m-2] -= 1;
@@ -832,57 +860,71 @@ function algorithm_4(digits,config,base) {
             }
         }
     } else if(x[m-1]+c[m-1]==2 && x[m-1]==1 && c[m-1]==1) {
+        debug("IV.5")
         if(z[m-1]!=base-1 && y[m-1] != 0) {
+            debug("IV.5.i")
             y[m-1] -= 1;
             z[m-1] += 1;
         } else if(z[m-1] != base-1 && y[m-1]==0) {
+            debug("IV.5.ii")
             x[m-1] = 0;
             y[m-1] = base-1;
             z[m-1] += 1;
         } else if(z[m-1] == base-1 && z[m-2] != 0) {
+            debug("IV.5.iii")
             if(y[m-2]!=base-1) {
+                debug("IV.5.iii.a")
                 x[m-1] = 0;
                 y[m-2] += 1;
                 y[m-1] += 1;
                 z[m-2] -= 1;
                 z[m-1] = base-2;
             } else if(y[m-2]==base-1 && y[m-1] > 1) {
+                debug("IV.5.iii.b")
                 x[m-1] = 2;
                 y[m-2] = base-2;
                 y[m-1] -= 2;
                 z[m-2] += 1;
                 z[m-1] = 1;
             } else if(y[m-2]==base-1 && y[m-1] == 0) {
+                debug("IV.5.iii.c")
                 y[m-2] = base-2;
                 y[m-1] = base-2;
                 z[m-2] += 1;
                 z[m-1] = 1;
             } else if(y[m-2] == base-1 && y[m-1] == 1) {
+                debug("IV.5.iii.d")
                 y[m-2] = base-2;
                 y[m-1] = base-1;
                 z[m-2] += 1;
                 z[m-1] = 1;
             }
         } else if(z[m-1] == base-1 && z[m-2] == 0 && y[m-2] != 0) {
+            debug("IV.5.iv")
             if(y[m-1] > 1) {
+                debug("IV.5.iv.a")
                 x[m-1] = 2;
                 y[m-2] -= 1;
                 y[m-1] -= 2;
                 z[m-2] = 1;
                 z[m-1] = 1;
             } else if(y[m-1]==0) {
+                debug("IV.5.iv.b")
                 y[m-2] -= 1;
                 y[m-1] = base-2;
                 z[m-2] = 1;
                 z[m-1] = 1;
             } else if(y[m-1] == 1) {
+                debug("IV.5.iv.c")
                 y[m-2] -= 1;
                 y[m-1] = base-1;
                 z[m-2] = 1;
                 z[m-1] = 1;
             }
         } else if(z[m-1] == base-1 && z[m-2] == 0 && y[m-2] == 0) {
+            debug("IV.5.v")
             if(y[m-1] > 1) {
+                debug("IV.5.v.a")
                 x[m-2] -= 1;
                 x[m-1] = 2;
                 y[m-2] = base-1;
@@ -890,12 +932,14 @@ function algorithm_4(digits,config,base) {
                 z[m-2] = 1;
                 z[m-1] = 1;
             } else if(y[m-1] == 0) {
+                debug("IV.5.v.b")
                 x[m-2] -= 1;
                 y[m-2] = base-1;
                 y[m-1] = base-2;
                 z[m-2] = 1;
                 z[m-1] = 1;
             } else if(y[m-1] == 1) {
+                debug("IV.5.v.c")
                 x[m-2] -= 1;
                 y[m-2] = base-1;
                 y[m-1] = base-1;
@@ -904,6 +948,7 @@ function algorithm_4(digits,config,base) {
             }
         }
     } else if(x[m-1] + c[m-1] == 3) {
+        debug("IV.6");
         y[m-1] -= 1;
         z[m-1] = 0;
     }
