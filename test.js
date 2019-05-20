@@ -43,19 +43,16 @@ const bads = [
 
 const arg = process.argv[2] || 'every';
 if(!isNaN(arg)) {
+    debugging.active = true;
+
     if(test(parseInt(arg))) {
         console.log('works');
     }
-    const ps = sum_of_palindromes(parseInt(arg));
-    console.log('ps',ps);
-    const {type,config,special} = decide_type(digits_of(parseInt(arg)).reverse());
-    console.log('type',type);
-    console.log('special',special);
-    console.log('config',config);
 } else if(arg=='every') {
     const from = parseInt(process.argv[3] || 0);
     const limit = parseInt(process.argv[4] || 10**8);
-    let marker = Math.floor(Math.log(from)/Math.log(2));
+    let marker = Math.pow(2,Math.floor(Math.log(from)/Math.log(2)));
+    console.log(marker);
     for(let i=from;i<limit;i++) {
         if(i==marker) {
             console.log(marker);

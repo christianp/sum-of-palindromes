@@ -42,7 +42,6 @@ function big_sub(a,b,base) {
 }
 
 function D(n,base) {
-    debug(`D(${n})`);
     if(arguments.length<2) {
         throw(new Error("forgot to give base to D"));
     }
@@ -713,24 +712,20 @@ function algorithm_4(digits,config,base) {
     [x[1],y[1],z[1]] = [config[0][1],config[1][0],config[2][0]];
     const c = [];
     c[1] = idiv(1+y[1]+z[1], base);
-    debug('c1',c[1]);
     x[2] = z[1] <= digits[2*m-4]-1 ? D(digits[2*m-3]-y[1],base) : D(digits[2*m-3]-y[1]-1,base);
     y[2] = D(digits[2*m-4]-z[1]-1,base);
     z[2] = D(digits[1]-x[1]-y[2]-c[1],base);
     c[2] = idiv(x[1]+y[2]+z[2]+c[1]-digits[1],base);
-    debug(`x2: ${x[2]} y2: ${y[2]} z2: ${z[2]} c2: ${c[2]}`);
     for(let i=3;i<=m-2;i++) {
         x[i] = z[i-1]<=digits[2*m-i-2]-1 ? 1 : 0;
         y[i] = D(digits[2*m-i-2]-z[i-1]-1,base);
         z[i] = D(digits[i-1]-x[i-1]-y[i]-c[i-1],base);
         c[i] = idiv(x[i-1]+y[i]+z[i]+c[i-1]-digits[i-1],base);
-        debug(`x${i}: ${x[i]} y${i}: ${y[i]} z${i}: ${z[i]} c${i}: ${c[i]}`);
     }
     x[m-1] = z[m-2] <= digits[m-1]-1 ? 1 : 0;
     y[m-1] = D(digits[m-1]-z[m-2]-1,base);
     z[m-1] = D(digits[m-2]-x[m-2]-y[m-1]-c[m-2],base);
     c[m-1] = idiv(x[m-2]+y[m-1]+z[m-1]+c[m-2]-digits[m-2],base);
-    debug(`x${m-1}: ${x[m-1]} y${m-1}: ${y[m-1]} z${m-1}: ${z[m-1]} c${m-1}: ${c[m-1]}`);
 
     debug(`x: ${x}\ny: ${y}\nz: ${z}\nc: ${c}`);
 
@@ -978,24 +973,26 @@ function algorithm_5(digits,config,base) {
     s[m] = 1;
     s[m-1] = 1;
     let digits2 = big_sub(digits,s,base);
-    debug(`${digits}\n${s}\n${digits2}`);
     if(digits2[m-1]==0 || digits2[m]==0) {
         debug("One of d'm-1 and d'm is 0");
         s[m] = 2;
         s[m-1] = 2;
         digits2 = big_sub(digits,s,base);
     }
+    debug(`n' = ${digits2}`);
     const res = decide_type(digits2,base=10);
     const even = res.config[0].length%2==0;
     let ps;
+    debug(`n' begins with even? ${even}`);
     if(even) {
         ps = main_algorithm(digits2,base);
     } else {
         const config2 = [[],[],[]];
-        const [dl1,dl2,dl3] = [digits[l-1],digits[l-2],digits[l-3]];
-        const d0 = digits[0];
-        if(dl1==1 && dl2<=2 && dl3>=4 && D(d0-dl3,base) != 0) {
-            type = 'B1';
+        const [dl1,dl2,dl3] = [digits2[l-1],digits2[l-2],digits2[l-3]];
+        const d0 = digits2[0];
+        let z1;
+        if(dl1==1 && dl2<=2 && D(d0-dl3,base) != 0) {
+            debug('B1');
             config2[0][l-1] = 1;
             config2[0][l-2] = dl2;
             config2[0][1] = dl2;
@@ -1005,8 +1002,8 @@ function algorithm_5(digits,config,base) {
             z1 = D(d0-dl3,base);
             config2[2][l-4] = z1;
             config2[2][0] = z1;
-        } else if(dl1==1 && dl2<=2 && dl3>=3 && D(d0-dl3,base) == 0) {
-            type = 'B2';
+        } else if(dl1==1 && dl2<=2 && D(d0-dl3,base) == 0) {
+            debug('B2');
             config2[0][l-1] = 1;
             config2[0][l-2] = dl2;
             config2[0][1] = dl2;
@@ -1016,10 +1013,13 @@ function algorithm_5(digits,config,base) {
             config2[2][l-4] = 1;
             config2[2][0] = 1;
         }
+        debug("n' config",config2);
         ps = algorithm_4(digits2,config2,base);
     }
+    debug(ps);
     ps[0][m-1] += s[m-1];
     ps[0][m] += s[m];
+    debug(ps);
     
     return ps;
 }
