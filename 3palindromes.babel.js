@@ -770,6 +770,7 @@ function algorithm_4(digits, config, base) {
   z[m - 1] = D(digits[m - 2] - x[m - 2] - y[m - 1] - c[m - 2], base);
   c[m - 1] = idiv(x[m - 2] + y[m - 1] + z[m - 1] + c[m - 2] - digits[m - 2], base);
   debug("x".concat(m - 1, ": ").concat(x[m - 1], " y").concat(m - 1, ": ").concat(y[m - 1], " z").concat(m - 1, ": ").concat(z[m - 1], " c").concat(m - 1, ": ").concat(c[m - 1]));
+  debug("x: ".concat(x, "\ny: ").concat(y, "\nz: ").concat(z, "\nc: ").concat(c));
 
   if (x[m - 1] + c[m - 1] == 1) {
     // IV.1
@@ -783,7 +784,7 @@ function algorithm_4(digits, config, base) {
       debug("IV.2.i");
       y[m - 1] += 1;
       z[m - 1] -= 1;
-    } else if (z[m - 1] == 0 && y[m - 1] != 0) {
+    } else if (z[m - 1] == 0 && y[m - 2] != 0) {
       // IV.2.ii
       debug("IV.2.ii");
 

@@ -731,6 +731,9 @@ function algorithm_4(digits,config,base) {
     z[m-1] = D(digits[m-2]-x[m-2]-y[m-1]-c[m-2],base);
     c[m-1] = idiv(x[m-2]+y[m-1]+z[m-1]+c[m-2]-digits[m-2],base);
     debug(`x${m-1}: ${x[m-1]} y${m-1}: ${y[m-1]} z${m-1}: ${z[m-1]} c${m-1}: ${c[m-1]}`);
+
+    debug(`x: ${x}\ny: ${y}\nz: ${z}\nc: ${c}`);
+
     if(x[m-1]+c[m-1] == 1) { // IV.1
         debug("no adjustment");
         // do nothing
@@ -740,7 +743,7 @@ function algorithm_4(digits,config,base) {
             debug("IV.2.i");
             y[m-1] += 1;
             z[m-1] -= 1;
-        } else if(z[m-1]==0 && y[m-1]!=0) { // IV.2.ii
+        } else if(z[m-1]==0 && y[m-2]!=0) { // IV.2.ii
             debug("IV.2.ii");
             if(y[m-1]!=1 && z[m-2] != base-1) { // IV.2.ii.a
                 debug("IV.2.ii.a");
