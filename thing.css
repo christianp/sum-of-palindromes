@@ -1,5 +1,5 @@
 html {
-    font-size: 3vw;
+    font-size: min(3vw,5vh);
 }
 body {
     text-align: center;
