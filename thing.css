@@ -42,6 +42,9 @@ p, h1, h2, h3 {
     }
 }
 main {
+    height: 100svh;
+    overflow: hidden scroll;
+    scroll-snap-type: y mandatory;
 }
 section {
     min-height: 100vh;
@@ -49,6 +52,7 @@ section {
     justify-content: center;
     flex-direction: column;
     padding: 1em 0;
+    scroll-snap-align: start;
 }
 footer {
     font-size: 0.8rem;
